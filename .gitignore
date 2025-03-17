@@ -11,3 +11,8 @@
 *.lai
 *.la
 *.a
+
+# PlatformIO directories
+.pio
+.pioenvs
+.piolibdeps
