@@ -9,28 +9,28 @@
 //
 // Authors:  Paul Holleis, Marko Luther
 //
-// Redistribution and use in source and binary forms, with or without modification, are 
+// Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
 //
-//   Redistributions of source code must retain the above copyright notice, this list of 
+//   Redistributions of source code must retain the above copyright notice, this list of
 //   conditions and the following disclaimer.
 //
-//   Redistributions in binary form must reproduce the above copyright notice, this list 
-//   of conditions and the following disclaimer in the documentation and/or other materials 
+//   Redistributions in binary form must reproduce the above copyright notice, this list
+//   of conditions and the following disclaimer in the documentation and/or other materials
 //   provided with the distribution.
 //
-//   Neither the name of the copyright holder(s) nor the names of its contributors may be 
-//   used to endorse or promote products derived from this software without specific prior 
+//   Neither the name of the copyright holder(s) nor the names of its contributors may be
+//   used to endorse or promote products derived from this software without specific prior
 //   written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS 
-// OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+// OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // ------------------------------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ void ToninoConfig::init() {
 
 // returns true if the value is not a valid float
 bool ToninoConfig::isInvalidNumber(float f) {
-  return isnan(f) || isinf(f) || f > 4294967040.0 || 
+  return isnan(f) || isinf(f) || f > 4294967040.0 ||
          f <-4294967040.0 || f == 0x7fffffff || f == (-0x7fffffff -1L);
 }
 
@@ -105,7 +105,7 @@ void ToninoConfig::setScaling(float *cal) {
     WRITEDEBUGLN();
   }
 }
-  
+
 // store sampling rate to sensor library and EEPROM
 void ToninoConfig::setSampling(uint8_t sampling) {
   _colorSense->setSampling(sampling);
@@ -291,7 +291,7 @@ uint8_t ToninoConfig::checkedEepromRead(uint8_t addr) {
     WRITEDEBUG(vals[cyc]);
   }
   WRITEDEBUGLN();
-  
+
   // need to find most probably correct (=most frequent) value
   uint8_t val = 0;
   if (getMostFrequent(vals, &val)) {

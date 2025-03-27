@@ -10,7 +10,7 @@
 //   - receive command XXX y1 y2 y3, answer with XXX:z1 z2 z3
 //   - parameter separator: SEPARATOR (default is a space)
 //   - answers are ended with \n
-// 
+//
 //
 // *** BSD License ***
 // ------------------------------------------------------------------------------------------
@@ -19,28 +19,28 @@
 //
 // Author:  Paul Holleis, Marko Luther
 //
-// Redistribution and use in source and binary forms, with or without modification, are 
+// Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
 //
-//   Redistributions of source code must retain the above copyright notice, this list of 
+//   Redistributions of source code must retain the above copyright notice, this list of
 //   conditions and the following disclaimer.
 //
-//   Redistributions in binary form must reproduce the above copyright notice, this list 
-//   of conditions and the following disclaimer in the documentation and/or other materials 
+//   Redistributions in binary form must reproduce the above copyright notice, this list
+//   of conditions and the following disclaimer in the documentation and/or other materials
 //   provided with the distribution.
 //
-//   Neither the name of the copyright holder(s) nor the names of its contributors may be 
-//   used to endorse or promote products derived from this software without specific prior 
+//   Neither the name of the copyright holder(s) nor the names of its contributors may be
+//   used to endorse or promote products derived from this software without specific prior
 //   written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS 
-// OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+// OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // ------------------------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@
 #include <EEPROM.h>
 
 // low power library, built-in, see http://playground.arduino.cc/Learning/arduinoSleepCode
-#include <avr/power.h>  
+#include <avr/power.h>
 // low power library, https://github.com/rocketscream/Low-Power, Version 1.30
 #include <LowPower.h>
 
@@ -100,14 +100,14 @@ boolean checkCommands() {
 inline uint32_t checkLowPowerMode(bool isLight, uint32_t lastTimestamp) {
   if (millis() - lastTimestamp > TIME_TILL_SLEEP) {
     display.clear();
-  
+
     int16_t loopsTillPowerDown = (TIME_TILL_POWERDOWN - TIME_TILL_SLEEP) / 4000 + 1;
-  
+
     while (true) {
-      LowPower.powerDown(SLEEP_4S, ADC_OFF, BOD_OFF);  
-  
+      LowPower.powerDown(SLEEP_4S, ADC_OFF, BOD_OFF);
+
       // do we receive serial input during powerDown?
-      if (Serial.available() > 0 || 
+      if (Serial.available() > 0 ||
          (!isLight && colorSense.isLight()) || (isLight && colorSense.isDark())) {
         break;
       }
@@ -130,7 +130,7 @@ inline uint32_t checkLowPowerMode(bool isLight, uint32_t lastTimestamp) {
       display.setBrightness(1);
     }
     return lastTimestamp;
-    
+
   } else if (origBrightness >= 0) {
     // restore original brightness
     display.setBrightness(origBrightness);
@@ -142,11 +142,11 @@ inline uint32_t checkLowPowerMode(bool isLight, uint32_t lastTimestamp) {
 // called when detected first calibration plate with quick scan
 boolean calibrate() {
   sensorData sd;
-  
+
   display.calibration1();
   WRITEDEBUGLN("Cal.");
   delay(500);
-  
+
   // scan plate 1
   colorSense.scan(NULL, false, &sd);
   if (checkCommands()) return false;
@@ -156,7 +156,7 @@ boolean calibrate() {
 
   float redavg = sd.value[RED_IDX];
   float blueavg = sd.value[BLUE_IDX];
-  
+
   if ((abs(redavg - LOW_RED) < RED_RANGE_LOW) && (abs(blueavg - LOW_BLUE) < BLUE_RANGE_LOW)) {
 
     float rb_low = redavg / blueavg;
@@ -206,7 +206,7 @@ boolean calibrate() {
       WRITEDEBUG(blueavg);
       WRITEDEBUG("=");
       WRITEDEBUGF(rb_high, 5);
-      
+
       WRITEDEBUG("=>");
       WRITEDEBUGF(cal[0], 5);
       WRITEDEBUG(",");
@@ -245,7 +245,7 @@ inline void displayNum(int32_t tval) {
 // make a full scan and display on LCD
 inline void scanAndDisplay(float* lastRaw) {
   boolean averaged = false; // indicates if readings got averaged with the lastRaw (the previous one)
-  
+
   // make a measurement with stored configuration, parameters:
   // 1: lastRaw: passes lastRaw readings for averaging
   // 2: false: no display animation during scan
@@ -254,7 +254,7 @@ inline void scanAndDisplay(float* lastRaw) {
   // 5: false: no explicit external light removal
   // 6: averaged: return flag that indicates that result got averaged
   int32_t tval = colorSense.scan(lastRaw, false, NULL, true, false, &averaged);
- 
+
 
   displayNum(tval);
   display.averaged(averaged); // display the averaged indicator
@@ -276,7 +276,7 @@ void setup() {
   power_spi_disable(); // disable unused Serial Peripheral Interface
   SPCR = 0;
   // ---- end low energy configuration
-    
+
   // to visualize that the Arduino is running
   pinMode (13, OUTPUT);    // changed as per below
   digitalWrite(13, HIGH);
@@ -297,7 +297,7 @@ void setup() {
   // read parameters from EEPROM or write defaults if not available
   // be sure to call this _after_ display and colorSense have been initialized (using .init())
   tConfig.init();
-  
+
   // show that the display is working
   display.eightSequence();
   digitalWrite(13, LOW);
@@ -324,14 +324,14 @@ void loop() {
   // store when last action was detected (for low power idle mode)
   uint32_t lastTimestamp = 0;
   float lastRaw = 0.0; // last calibrated r/b result
-  
+
   while(true) {
     // check this setting within the while loop as it could be changed during runtime
     uint16_t delayTillUpTest = tConfig.getDelayTillUpTest() * 100;
-    
+
     // poll if there is an incoming serial command
     if (checkCommands()) lastTimestamp = millis();
-    
+
     // check whether user lifted the can
     if (colorSense.isLight()) {
       lastTimestamp = millis();
@@ -349,7 +349,7 @@ void loop() {
 
         lastTimestamp = checkLowPowerMode(true, lastTimestamp);
       }
-      // short wait because it might already be dark before 
+      // short wait because it might already be dark before
       // the can is fully placed on the surface
       delay(1000);
       display.circle(2, 500);
@@ -367,14 +367,13 @@ void loop() {
       lastTimestamp = checkLowPowerMode(false, lastTimestamp);
     }
     delay(delayTillUpTest);
-    
+
     if ((millis() - lastTimestamp) > AVERAGE_TIME_SPAN) {
         // AVERAGE_TIME_SPAN milliseconds after the last scan we deactivate the averaging
         lastRaw = 0.0;
         display.averaged(false); // clear the averaging indicator
     }
-      
+
     lastTimestamp = checkLowPowerMode(false, lastTimestamp);
   }
 }
-

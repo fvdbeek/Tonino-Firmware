@@ -13,28 +13,28 @@
 //
 // Authors:  Paul Holleis, Marko Luther
 //
-// Redistribution and use in source and binary forms, with or without modification, are 
+// Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
 //
-//   Redistributions of source code must retain the above copyright notice, this list of 
+//   Redistributions of source code must retain the above copyright notice, this list of
 //   conditions and the following disclaimer.
 //
-//   Redistributions in binary form must reproduce the above copyright notice, this list 
-//   of conditions and the following disclaimer in the documentation and/or other materials 
+//   Redistributions in binary form must reproduce the above copyright notice, this list
+//   of conditions and the following disclaimer in the documentation and/or other materials
 //   provided with the distribution.
 //
-//   Neither the name of the copyright holder(s) nor the names of its contributors may be 
-//   used to endorse or promote products derived from this software without specific prior 
+//   Neither the name of the copyright holder(s) nor the names of its contributors may be
+//   used to endorse or promote products derived from this software without specific prior
 //   written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS 
-// OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+// OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // ------------------------------------------------------------------------------------------
 
@@ -48,9 +48,9 @@ LCD *TCS3200::_display;
 TCS3200::TCS3200(uint8_t s2, uint8_t s3, uint8_t led, uint8_t power, LCD *display) :
   _S2(s2), _S3(s3), _LED(led), _POWER(power),
   _readDiv(NORMAL_SAMPLING), _colorMode(COLOR_FULL) {
-  
+
   _display = display;
-  
+
   #if NR_CAL_VALUES == 2
     _cal[0] = DEFAULT_CAL_0;
     _cal[1] = DEFAULT_CAL_1;
@@ -85,7 +85,7 @@ void TCS3200::init() {
   pinMode(_S3, OUTPUT);
   pinMode(_LED, OUTPUT);
   pinMode(_POWER, OUTPUT);
-  
+
   sensorOff();
 }
 
@@ -108,7 +108,7 @@ int32_t TCS3200::fitValue(sensorData *sd, float* raw, uint8_t colorMode, boolean
   float r = (float)sd->value[RED_IDX];
   float b = (float)sd->value[BLUE_IDX];
   float v = (r / b) * _cal[0] + _cal[1];
-  
+
   // averaging
   if (raw != NULL && *raw != 0.0 && abs(v - *raw) < AVERAGE_THRESHOLD) {
     WRITEDEBUGLN("averaged:");
@@ -124,7 +124,7 @@ int32_t TCS3200::fitValue(sensorData *sd, float* raw, uint8_t colorMode, boolean
       *averaged = false;
     }
   }
-    
+
   WRITEDEBUG(v);
   WRITEDEBUG(SEPARATOR);
   // scale
@@ -146,7 +146,7 @@ int32_t TCS3200::scan(float *raw, bool displayAnim, sensorData *outersd, boolean
   for (uint8_t i = 0; i < 5; ++i) {
     sd.value[i] = 0;
   }
-  
+
   // display off
   if (_display != NULL) {
     _display->clear();
@@ -157,7 +157,7 @@ int32_t TCS3200::scan(float *raw, bool displayAnim, sensorData *outersd, boolean
     digitalWrite(_LED, HIGH);
   }
   delay(SENSOR_ON_DELAY);
-  
+
   if (_colorMode & COLOR_WHITE) {
     if (displayAnim && _display != NULL) {
       _display->lineAnim(animPos++, 0);
@@ -198,7 +198,7 @@ int32_t TCS3200::scan(float *raw, bool displayAnim, sensorData *outersd, boolean
 		delay(500);
 		digitalWrite(_POWER, HIGH);
 		delay(SENSOR_ON_DELAY);
-		
+
 		WRITEDEBUG("ext light:");
 		uint32_t ds;
 		if (_colorMode & COLOR_WHITE) {
@@ -235,14 +235,14 @@ int32_t TCS3200::scan(float *raw, bool displayAnim, sensorData *outersd, boolean
 
   // calculate T-value according to current formula
   int32_t tval = fitValue(&sd, raw, _colorMode, averaged);
-  
+
   if (outersd != NULL) {
     for (int i = 0; i < 4; ++i) {
       outersd->value[i] = sd.value[i];
     }
     outersd->value[4] = tval;
   }
-  
+
   return tval;
 }
 
@@ -273,10 +273,10 @@ uint8_t TCS3200::isCalibrating() {
   int32_t wval = readSingle();
   setFilter(BLUE_IDX); // blue sensor
   int32_t bval = readSingle();
-  
+
   WRITEDEBUGLN(wval);
   WRITEDEBUGLN(bval);
-  
+
   sensorOff();
   _readDiv = samplingBackup;
 
@@ -289,7 +289,7 @@ uint8_t TCS3200::isCalibrating() {
     cal = HIGH_PLATE;
   }
   // else found no calibration plate
-  
+
   WRITEDEBUG("isCalib:");
   WRITEDEBUG(wval);
   WRITEDEBUG(",");
@@ -308,7 +308,7 @@ bool TCS3200::isLight() {
   digitalWrite(_POWER, HIGH);
   setFilter(WHITE_IDX); // white sensor
   delay(SENSOR_ON_DELAY);
-  
+
   uint32_t val = readSingle();
   sensorOff();
   _readDiv = samplingBackup;
@@ -324,7 +324,7 @@ bool TCS3200::isLight() {
 // returns true if quick sample without LEDs returns a low value
 bool TCS3200::isDark() {
    return !isLight();
-}  
+}
 
 // blocking read of a single sensor value
 uint32_t TCS3200::readSingle(void) {
@@ -340,23 +340,23 @@ uint32_t TCS3200::readSingle(void) {
 void TCS3200::setFilter(uint8_t f) {
   //WRITEDEBUG("setFilter ");
   switch (f) {
-    case RED_IDX:   /*WRITEDEBUGLN("R");*/ 
+    case RED_IDX:   /*WRITEDEBUGLN("R");*/
 			digitalWrite(_S2, LOW);
-			digitalWrite(_S3, LOW);  
+			digitalWrite(_S3, LOW);
 			break;
-    case GREEN_IDX:  /*WRITEDEBUGLN("G");*/ 
-			digitalWrite(_S2, HIGH); 
-			digitalWrite(_S3, HIGH); 
+    case GREEN_IDX:  /*WRITEDEBUGLN("G");*/
+			digitalWrite(_S2, HIGH);
+			digitalWrite(_S3, HIGH);
 			break;
-    case BLUE_IDX:  /*WRITEDEBUGLN("B");*/ 
-			digitalWrite(_S2, LOW);  
-			digitalWrite(_S3, HIGH); 
+    case BLUE_IDX:  /*WRITEDEBUGLN("B");*/
+			digitalWrite(_S2, LOW);
+			digitalWrite(_S3, HIGH);
 			break;
-    case WHITE_IDX:  /*WRITEDEBUGLN("X");*/ 
-			digitalWrite(_S2, HIGH); 
-			digitalWrite(_S3, LOW);  
+    case WHITE_IDX:  /*WRITEDEBUGLN("X");*/
+			digitalWrite(_S2, HIGH);
+			digitalWrite(_S3, LOW);
 			break;
-    default:  
+    default:
 			WRITEDEBUG("ERR:unk ");
 			WRITEDEBUGLN(f);
   }

@@ -12,28 +12,28 @@
 //
 // Authors:  Paul Holleis, Marko Luther
 //
-// Redistribution and use in source and binary forms, with or without modification, are 
+// Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
 //
-//   Redistributions of source code must retain the above copyright notice, this list of 
+//   Redistributions of source code must retain the above copyright notice, this list of
 //   conditions and the following disclaimer.
 //
-//   Redistributions in binary form must reproduce the above copyright notice, this list 
-//   of conditions and the following disclaimer in the documentation and/or other materials 
+//   Redistributions in binary form must reproduce the above copyright notice, this list
+//   of conditions and the following disclaimer in the documentation and/or other materials
 //   provided with the distribution.
 //
-//   Neither the name of the copyright holder(s) nor the names of its contributors may be 
-//   used to endorse or promote products derived from this software without specific prior 
+//   Neither the name of the copyright holder(s) nor the names of its contributors may be
+//   used to endorse or promote products derived from this software without specific prior
 //   written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS 
-// OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
-// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+// OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // ------------------------------------------------------------------------------------------
 
@@ -45,10 +45,10 @@
 uint8_t LCD::i2cAddr;
 
 // LCD driver needs 8*2 bytes
-uint16_t LCD::displaybuffer[8]; 
+uint16_t LCD::displaybuffer[8];
 
 // translates 0-F to bitmask for display
-static const uint8_t numbertable[] = { 
+static const uint8_t numbertable[] = {
    0x3F, /* 0 */
    0x06, /* 1 */
    0x5B, /* 2 */
@@ -68,7 +68,7 @@ static const uint8_t numbertable[] = {
 };
 
 // path to walk one digit
-static const uint8_t snaketable[] = { 
+static const uint8_t snaketable[] = {
   0b00010000,
   0b00001000,
   0b00000100,
@@ -98,10 +98,10 @@ void LCD::init(uint8_t addr) {
   Wire.beginTransmission(i2cAddr);
   Wire.write(0x21);
   Wire.endTransmission();
-  
+
   // display on, no blinking
   Wire.beginTransmission(i2cAddr);
-  Wire.write(0x81); 
+  Wire.write(0x81);
   Wire.endTransmission();
 
   // max brightness
@@ -119,7 +119,7 @@ inline void LCD::writeDigitRaw(uint8_t d, uint8_t bitmask) {
   }
   displaybuffer[d] = bitmask;
 }
-    
+
 // write number num (0-F) on digit d (0, 1, 3, 4)
 inline void LCD::writeDigitNum(uint8_t d, uint8_t num) {
   if (d > 4 || num > 15) {
@@ -138,14 +138,14 @@ void LCD::printNumber(int16_t n) {
   uint8_t numericDigits = 4;   // available digits on display
   int8_t displayPos = 4;
   boolean isNegative = false;  // true if the number is negative
-  
+
   // is the number negative?
   if (n < 0) {
     isNegative = true;  // need to draw sign later
     --numericDigits;    // the sign will take up one digit
     n *= -1;            // pretend the number is positive
   }
-  
+
   if (n == 0) {
     writeDigitNum(displayPos--, 0);
   } else {
@@ -193,7 +193,7 @@ void LCD::setBlinkRate(uint8_t rate) {
     return;
   }
   Wire.beginTransmission(i2cAddr);
-  Wire.write(0x80 | 0x01 | (rate << 1)); 
+  Wire.write(0x80 | 0x01 | (rate << 1));
   Wire.endTransmission();
 }
 
@@ -204,7 +204,7 @@ void LCD::line() {
   writeDigitRaw(3, 0b01000000); // -
   writeDigitRaw(4, 0b01000000); // -
   writeDisplay();
-}  
+}
 
 // display 4 eights, i.e. light all segments
 void LCD::eights() {
@@ -311,17 +311,17 @@ void LCD::circle(uint8_t repeat, uint16_t timePerCircle) {
     writeDigitRaw(0, 0b1);
     writeDisplay();
     delay(dtime);
-    
+
     writeDigitRaw(0, 0b0);
     writeDigitRaw(1, 0b1);
     writeDisplay();
     delay(dtime);
-  
+
     writeDigitRaw(1, 0b0);
     writeDigitRaw(3, 0b1);
     writeDisplay();
     delay(dtime);
-  
+
     writeDigitRaw(3, 0b0);
     writeDigitRaw(4, 0b1);
     writeDisplay();
@@ -335,17 +335,17 @@ void LCD::circle(uint8_t repeat, uint16_t timePerCircle) {
     writeDigitRaw(4, 0b1000);
     writeDisplay();
     delay(dtime);
-  
+
     writeDigitRaw(4, 0b0);
     writeDigitRaw(3, 0b1000);
     writeDisplay();
     delay(dtime);
-  
+
     writeDigitRaw(3, 0b0);
     writeDigitRaw(1, 0b1000);
     writeDisplay();
     delay(dtime);
-  
+
     writeDigitRaw(1, 0b0);
     writeDigitRaw(0, 0b1000);
     writeDisplay();
@@ -367,7 +367,7 @@ void LCD::dropNumber(uint16_t num) {
   }
   uint8_t dig[5];
   uint8_t startLed = 0;
-  
+
   dig[0] = num / 1000;
   num %= 1000;
   dig[1] = num / 100;
@@ -385,7 +385,7 @@ void LCD::dropNumber(uint16_t num) {
   }
 
   clear();
-  
+
   for (int led = startLed; led < 5; ++led) {
     if (led == 2) {
       continue;
@@ -448,7 +448,7 @@ void LCD::numberFromEights(uint16_t num) {
   for (int led = 0; led < 6; led++) {
     eight[led] = 0b01111111;
   }
-  
+
   dig[0] = numbertable[num / 1000];
   num %= 1000;
   dig[1] = numbertable[num / 100];
@@ -464,9 +464,9 @@ void LCD::numberFromEights(uint16_t num) {
       }
   }
   }
-  
+
   eights();
-  
+
   for (int i = 0; i < 7; i++) {
     delay(dtime);
     for (int led = 0; led < 5; led++) {
@@ -495,7 +495,7 @@ void LCD::numberFromEmpty(uint16_t num) {
   for (int led = 0; led < 6; led++) {
     eight[led] = 0b0;
   }
-  
+
   dig[0] = numbertable[num / 1000];
   num %= 1000;
   dig[1] = numbertable[num / 100];
@@ -513,7 +513,7 @@ void LCD::numberFromEmpty(uint16_t num) {
   }
 
   clear();
-  
+
   for (int i = 0; i < 7; i++) {
     delay(dtime);
     for (int led = 0; led < 5; led++) {
@@ -558,12 +558,12 @@ void LCD::snake(uint16_t num) {
 
   calcDigits(dig, num);
   clear();
-  
+
   for (int led = 0; led < 5; ++led) {
     if (led == 2) {
       continue;
     }
-  
+
     if (led == 0) {
       writeDigitRaw(led, snaketable[0]);
       writeDisplay();
@@ -673,8 +673,8 @@ void LCD::writeDisplay(void) {
   Wire.write((uint8_t)0x00);
 
   for (uint8_t i = 0; i < 8; ++i) {
-    Wire.write(displaybuffer[i] & 0xFF);    
-    Wire.write(displaybuffer[i] >> 8);    
+    Wire.write(displaybuffer[i] & 0xFF);
+    Wire.write(displaybuffer[i] >> 8);
   }
   Wire.endTransmission();
 }
